@@ -1,0 +1,297 @@
+import { useCallback, useState } from "react";
+import axios from "axios";
+import { useDropzone } from "react-dropzone";
+import {
+  InputDateComponent,
+  InputNumberComponent,
+  InputTextComponent,
+} from "../components/InputComponent";
+import { Send } from "../components/Send";
+import { BASE_URL } from "../env";
+
+function FileUpload() {
+  const initialData = {
+    firstName: "",
+    lastName: "",
+    ssn: "",
+    birthDate: "",
+    file: "",
+    phone: "",
+  };
+  const [values, setValues] = useState(initialData);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [send, setSend] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    // console.log(values);
+    // return;
+
+    if (Object.values(values).includes("")) {
+      setError("Todos los datos son obligatorios.");
+      return;
+    }
+
+    try {
+      const data = new FormData();
+      for (let key in values) {
+        data.append(key, values[key]);
+      }
+
+      setLoading(true);
+
+      BASE_URL;
+
+      const response = await axios({
+        method: "post",
+        // url: "https://nodejs-production-b648.up.railway.app/api/usuario",
+        url: BASE_URL + "/usuario",
+        data: data,
+        headers: {
+          Accept: "application/json",
+          "Content-Type":
+            "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+        },
+      });
+      setValues(initialData);
+      event.target.reset();
+
+      setError(null);
+      setLoading(false);
+      setSend(!send);
+      return response.data;
+    } catch (err) {
+      console.log(err.response.data);
+    }
+
+    setError(null);
+  };
+
+  const handleChange = ({ name, value }) => {
+    console.log({ name, value });
+    setValues((prevState) => {
+      // console.log(prevState);
+      return {
+        ...prevState,
+        [name]: value,
+      };
+    });
+  };
+
+  const handleChangeSend = () => {
+    setSend(false);
+  };
+
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+    // console.log(acceptedFiles[0]);
+    handleChange({ name: "file", value: acceptedFiles[0] });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
+    useDropzone({ onDrop, maxFiles: 1 });
+
+  const handleRemove = () => {
+    handleChange({ name: "file", value: "" });
+  };
+
+  const files = acceptedFiles.map((file) => (
+    <div
+      key={file.path}
+      id="toast-simple"
+      className="flex items-center w-full md:max-w-lg p-4 space-x-4 rtl:space-x-reverse text-gray-500 bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow-lg dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800 border border-blue-300 justify-between"
+      role="alert"
+    >
+      <div className="flex flex-row items-center">
+        <span>
+          <svg
+            className="w-5 h-5 text-blue-600 dark:text-blue-500 "
+            data-slot="icon"
+            fill="none"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+            ></path>
+          </svg>
+        </span>
+        <div className="ps-4 text-sm font-normal break-all">{file.path}</div>
+      </div>
+      <button className="pl-2" onClick={handleRemove}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          className="w-6 h-6 hover:text-red-500 transition-colors"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+          />
+        </svg>
+      </button>
+    </div>
+  ));
+  return (
+    <>
+      <main className="">
+        <div
+          className={`${
+            send ? "hidden" : "static"
+          } rounded-md p-4 md:p-8 bg-white shadow`}
+        >
+          <form action="" className="" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-4 gap-3">
+              <InputTextComponent
+                name="firstName"
+                label="First Name"
+                className="col-span-4 md:col-span-2"
+                handleChange={handleChange}
+                value={values.firstName}
+              />
+              <InputTextComponent
+                name="lastName"
+                label="Last Name"
+                className="col-span-4 md:col-span-2"
+                handleChange={handleChange}
+                value={values.lastName}
+              />
+              <InputDateComponent
+                name="birthDate"
+                label="Date of Birth:"
+                className="col-span-4 md:col-span-2"
+                handleChange={handleChange}
+                value={values.birthDate}
+                send={send}
+              />
+              <InputNumberComponent
+                name="ssn"
+                label="last 4 digits ssn"
+                className="col-span-4 md:col-span-2"
+                handleChange={handleChange}
+                value={values.ssn}
+              />
+
+              <InputNumberComponent
+                name="phone"
+                label="Phone Number"
+                className="col-span-4 md:col-span-2"
+                handleChange={handleChange}
+                value={values.phone}
+              />
+
+              {/* <InputMaskNumber
+                  label="Phone Number"
+                  className="col-span-4 md:col-span-2"
+                  name="phone"
+                  handleChange={handleChange}
+                  value={values.phone}
+                /> */}
+
+              <div className="col-span-4 flex items-center justify-center w-full flex-col">
+                <label
+                  {...getRootProps({ className: "dropzone" })}
+                  htmlFor=""
+                  className=" flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg
+                      className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    {isDragActive ? (
+                      <>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">Drop Here </span>
+                          Your File
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Files PDF
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">
+                            Click to upload{" "}
+                          </span>
+                          or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Files PDF
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <input id="file" name="file" {...getInputProps()} />
+                </label>
+                <div className="w-full mt-5 flex justify-center">
+                  {values.file && files}
+                </div>
+              </div>
+
+              {error && <p className="col-span-4 text-red-500">{error}</p>}
+              {loading ? (
+                <button
+                  disabled
+                  type="button"
+                  className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2 col-span-4 md:ml-auto transition-colors"
+                >
+                  <svg
+                    aria-hidden="true"
+                    role="status"
+                    className="inline w-4 h-4 me-3 text-white animate-spin"
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="#E5E7EB"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  Loading...
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2 col-span-4 md:ml-auto transition-colors"
+                >
+                  Save
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+        <Send send={send} handleChangeSend={handleChangeSend} />
+      </main>
+    </>
+  );
+}
+
+export default FileUpload;
