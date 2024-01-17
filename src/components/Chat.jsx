@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { avatarText } from "../utils/pacienteUtils";
+import { avatarText, formatPhoneNumber } from "../utils/pacienteUtils";
 import { FileLoading, NotFoundResults } from "./FileLoading";
 import { BASE_URL } from "../env";
 
@@ -119,7 +119,7 @@ function Chat({ id, phone, name }) {
                             {!isAnswerFromBot ? name : "Bot"}
                           </span>
                           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                            {!isAnswerFromBot ? phone : ""}
+                            {!isAnswerFromBot ? formatPhoneNumber(phone) : ""}
                           </span>
                         </div>
                         <code className="text-xs md:text-sm font-normal py-2.5  text-gray-900 dark:text-white whitespace-pre-line leading-[15px] md:leading-normal">

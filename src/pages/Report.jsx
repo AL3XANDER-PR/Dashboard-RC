@@ -40,7 +40,7 @@ function Report() {
         from: data.from,
       });
     } catch (e) {
-      alert("Error: " + e);
+      //alert("Error: " + e);
       return "Error: " + e.message;
     }
   };

@@ -25,8 +25,6 @@ function FileUpload() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // console.log(values);
-    // return;
 
     if (Object.values(values).includes("")) {
       setError("Todos los datos son obligatorios.");
@@ -40,8 +38,6 @@ function FileUpload() {
       }
 
       setLoading(true);
-
-      BASE_URL;
 
       const response = await axios({
         method: "post",
@@ -63,6 +59,7 @@ function FileUpload() {
       return response.data;
     } catch (err) {
       console.log(err.response.data);
+      alert("Error: " + err.response);
     }
 
     setError(null);
@@ -180,6 +177,7 @@ function FileUpload() {
                 className="col-span-4 md:col-span-2"
                 handleChange={handleChange}
                 value={values.ssn}
+                mask={"0000"}
               />
 
               <InputNumberComponent
@@ -188,6 +186,7 @@ function FileUpload() {
                 className="col-span-4 md:col-span-2"
                 handleChange={handleChange}
                 value={values.phone}
+                mask={"+{1}(000)000-0000"}
               />
 
               {/* <InputMaskNumber

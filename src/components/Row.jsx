@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { avatarText } from "../utils/pacienteUtils";
+import { avatarText, formatPhoneNumber } from "../utils/pacienteUtils";
 import Modal from "./Modal";
 import { initModals } from "flowbite";
 import Chat from "./Chat";
@@ -69,7 +69,9 @@ function Row({ usuario }) {
           </div>
         </th>
         <td className="px-4 py-3 text-xs hidden sm:table-cell">{birthDate}</td>
-        <td className="px-4 py-3 text-xs hidden sm:table-cell">{phone}</td>
+        <td className="px-4 py-3 text-xs hidden sm:table-cell">
+          {formatPhoneNumber(phone)}
+        </td>
         <td className="px-4 py-3 text-xs text-center hidden sm:table-cell">
           {ssn}
         </td>

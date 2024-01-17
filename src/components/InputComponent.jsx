@@ -2,6 +2,7 @@
 import Datepicker from "tailwind-datepicker-react";
 // import { useInputDate } from "../hooks/useInputDate";
 import { useEffect, useState } from "react";
+import { IMaskInput } from "react-imask";
 /* eslint-disable react/prop-types */
 export function InputTextComponent({
   label = "InputText",
@@ -73,10 +74,11 @@ export function InputNumberComponent({
   className,
   handleChange,
   value,
+  mask,
 }) {
   return (
     <div className={`relative ${className}`}>
-      <input
+      {/* <input
         type="number"
         id={name}
         name={name}
@@ -86,6 +88,34 @@ export function InputNumberComponent({
         onChange={(e) =>
           handleChange({ name: e.target.name, value: e.target.value })
         }
+      /> */}
+      <IMaskInput
+        className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        radix="."
+        value={value}
+        id={name}
+        name={name}
+        unmask={"typed"} // true|false|'typed'
+        // ref={ref}
+        // inputRef={inputRef} // access to nested input
+        // DO NOT USE onChange TO HANDLE CHANGES!
+        // USE onAccept INSTEAD
+        mask={mask}
+        onAccept={
+          // depending on prop above first argument is
+          // `value` if `unmask=false`,
+          // `unmaskedValue` if `unmask=true`,
+          // `typedValue` if `unmask='typed'`
+          (value, mask) => {
+            // console.log("💻 - value, mask:", value, mask);
+            // console.log(value);
+            handleChange({ name, value: value });
+          }
+        }
+        // ...and more mask props in a guide
+
+        // input props also available
+        placeholder=""
       />
       <label
         htmlFor={name}
@@ -205,7 +235,7 @@ export function InputDateComponent({
       icons: "",
       text: "",
       disabledText: "text-gray-500",
-      input: "",
+      input: "pb-2.5 pt-4",
       inputIcon: "",
       selected: "hover:bg-gray-300",
     },
@@ -263,6 +293,7 @@ export function InputDateComponent({
         onChange={handleChangeValue}
         show={show}
         setShow={handleClose}
+        classNames=""
         // value={new Date()}
         // value={selectedDate}
       />
