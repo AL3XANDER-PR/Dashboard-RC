@@ -8,7 +8,7 @@ function Chat({ id, phone, name }) {
   const [message, setMessage] = useState();
 
   const getChatBot = async () => {
-    console.log({ id, phone });
+    // console.log({ id, phone });
     try {
       const { data } = await axios({
         method: "GET",
@@ -16,7 +16,7 @@ function Chat({ id, phone, name }) {
         params: { phone },
       });
 
-      console.log(data.data);
+      // console.log(data.data);
       setMessage(data.data);
     } catch (e) {
       alert("Error: " + e);
@@ -92,9 +92,16 @@ function Chat({ id, phone, name }) {
             <div className="px-4 py-3 md:p-5 min-h-52 max-h-[80vh] overflow-y-scroll">
               {message ? (
                 message.map((item) => {
-                  const isAnswerFromBot =
-                    item.keyword.startsWith("key_") ||
-                    item.keyword.startsWith("ans_");
+                  if (item.answer === "__call_action__") return;
+                  let isAnswerFromBot = false;
+                  if (!(item.keyword === null)) {
+                    isAnswerFromBot =
+                      item.keyword.startsWith("key_") ||
+                      item.keyword.startsWith("ans_");
+                  } else {
+                    isAnswerFromBot = true;
+                  }
+
                   return (
                     <div
                       className={`flex items-start gap-2.5 mb-2   ${
